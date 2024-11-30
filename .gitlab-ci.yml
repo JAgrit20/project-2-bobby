@@ -1,38 +1,63 @@
+stages:
+  - build
+  - test
+  - deploy
+
+# Build the main game executable
 build-game:
-   stage: build
-   script:
-      - make cardGame
-   artifacts:
-      paths:
-         - cardGame
+  stage: build
+  script:
+    # Compile the main game using the Makefile
+    - make oldmaid
+  artifacts:
+    paths:
+      - oldmaid  # The generated executable
+  tags:
+    - linux  # Add appropriate runner tags if necessary
 
+# Build the test executable
 build-test:
-   stage: build
-   script:
-      - make testGame
-   artifacts:
-      paths:
-         - testGame
+  stage: build
+  script:
+    # Compile the test executable using the Makefile
+    - make testGame  # Make sure you have a 'testGame' target in your Makefile
+  artifacts:
+    paths:
+      - testGame  # The test executable
+  tags:
+    - linux
 
+# Run tests
 test-game:
-   stage: test
-   script:
-      - testGame
-      - make memcheck-test
-      - make static
-      - make style
+  stage: test
+  script:
+    # Run the game tests
+    - ./testGame  # Assuming you have a testGame executable
+    # Run memory check (requires `valgrind` to be installed)
+    - make memcheck-test
+    # Static analysis (requires `cppcheck` or similar)
+    - make static
+    # Code style checks (requires `clang-format` or similar)
+    - make style
+  tags:
+    - linux
 
+# Deploy documentation and coverage reports
 pages:
-   stage: deploy
-   dependencies:
-      - test-game
-   script:
-      - make coverage
-      - make docs
-   artifacts:
-      paths:
-         - coverage
-         - docs
-      expire_in: 14 days
-   only:
-      - master
+  stage: deploy
+  dependencies:
+    - test-game  # Ensure tests are done before deploy
+  script:
+    # Generate coverage reports (requires `gcov` or a similar tool)
+    - make coverage
+    # Build the documentation (e.g., using Doxygen or another tool)
+    - make docs
+  artifacts:
+    paths:
+      - coverage
+      - docs
+    expire_in: 14 days  # Keep the artifacts for 14 days
+  only:
+    - master  # Deploy only on the master branch
+  tags:
+    - linux
