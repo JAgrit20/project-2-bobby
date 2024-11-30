@@ -1,25 +1,28 @@
-// src/Player.cpp
 #include "Player.h"
+#include <iostream>
 
-Player::~Player() {
-    for (auto card : hand) {
-        delete card;
-    }
-}
-
+// Add a card to the player's hand
 void Player::addCard(Card* c) {
     hand.push_back(c);
 }
 
+// Get a specific card from the player's hand by index
 Card* Player::getCard(unsigned int index) {
-    if (index >= hand.size()) return nullptr;
-    auto it = hand.begin();
-    std::advance(it, index);
-    Card* card = *it;
-    hand.erase(it);
-    return card;
+    if (index < hand.size()) {
+        auto it = std::next(hand.begin(), index);
+        return *it;
+    }
+    return nullptr;
 }
 
+// Get the list of cards in the player's hand
 std::list<Card*>* Player::getHand() {
     return &hand;
+}
+
+// Destructor for cleaning up player resources (if needed)
+Player::~Player() {
+    for (Card* card : hand) {
+        delete card;  // Assuming Card needs to be deleted
+    }
 }

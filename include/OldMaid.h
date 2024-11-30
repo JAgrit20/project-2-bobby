@@ -4,7 +4,7 @@
 #include <Game.h>
 #include <vector>
 
-class OldMaid : public Game {
+class OldMaid : public Game { 
  public:
     /**
     * Create a game of Old Maid using a UI and a deck.
